@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tic Tac Toe</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- Winner / Draw Message -->
   <div class="msg-container hide">
-    <p id="msg">Winner</p>
+    <p id="msg"></p>
     <button id="new-btn">New Game</button>
   </div>
 
@@ -17,6 +18,7 @@
     <h1>Tic Tac Toe</h1>
     <h2 id="turn">Turn: O</h2>
 
+    <!-- Game Board -->
     <div class="container">
       <div class="game">
         <button class="box"></button>
@@ -31,12 +33,12 @@
       </div>
     </div>
 
+    <!-- Score Board -->
     <div class="score-board">
       <p>Player O Wins: <span id="o-score">0</span></p>
       <p>Player X Wins: <span id="x-score">0</span></p>
       <p>Draws: <span id="draw-score">0</span></p>
     </div>
-    
 
     <button id="reset-btn">Reset Game</button>
   </main>

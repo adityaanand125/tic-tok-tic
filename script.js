@@ -3,88 +3,98 @@ let resetBtn = document.querySelector("#reset-btn");
 let newGameBtn = document.querySelector("#new-btn");
 let msgContainer = document.querySelector(".msg-container");
 let msg = document.querySelector("#msg");
+let turnText = document.querySelector("#turn");
 
-let turnO = true; //playerX, playerO
-let count = 0; //To Track Draw
+let oScore = document.querySelector("#o-score");
+let xScore = document.querySelector("#x-score");
+let drawScore = document.querySelector("#draw-score");
+
+let turnO = true;
+let count = 0;
+
+let oCount = 0;
+let xCount = 0;
+let drawCount = 0;
 
 const winPatterns = [
-  [0, 1, 2],
-  [0, 3, 6],
-  [0, 4, 8],
-  [1, 4, 7],
-  [2, 5, 8],
-  [2, 4, 6],
-  [3, 4, 5],
-  [6, 7, 8],
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
 ];
 
 const resetGame = () => {
   turnO = true;
   count = 0;
-  enableBoxes();
+  turnText.innerText = "Turn: O";
   msgContainer.classList.add("hide");
+
+  boxes.forEach(box => {
+    box.innerText = "";
+    box.disabled = false;
+    box.classList.remove("win");
+  });
 };
 
-boxes.forEach((box) => {
+boxes.forEach(box => {
   box.addEventListener("click", () => {
-    if (turnO) {
-      //playerO
-      box.innerText = "O";
-      turnO = false;
-    } else {
-      //playerX
-      box.innerText = "X";
-      turnO = true;
-    }
+    if (box.innerText !== "") return;
+
+    box.innerText = turnO ? "O" : "X";
     box.disabled = true;
     count++;
 
     let isWinner = checkWinner();
+    if (isWinner) return;
 
-    if (count === 9 && !isWinner) {
+    if (count === 9) {
       gameDraw();
+      return;
     }
+
+    turnO = !turnO;
+    turnText.innerText = `Turn: ${turnO ? "O" : "X"}`;
   });
 });
 
-const gameDraw = () => {
-  msg.innerText = `Game was a Draw.`;
-  msgContainer.classList.remove("hide");
-  disableBoxes();
-};
+const checkWinner = () => {
+  for (let pattern of winPatterns) {
+    let [a,b,c] = pattern;
+    let v1 = boxes[a].innerText;
+    let v2 = boxes[b].innerText;
+    let v3 = boxes[c].innerText;
 
-const disableBoxes = () => {
-  for (let box of boxes) {
-    box.disabled = true;
+    if (v1 && v1 === v2 && v2 === v3) {
+      pattern.forEach(i => boxes[i].classList.add("win"));
+      showWinner(v1);
+      return true;
+    }
   }
-};
-
-const enableBoxes = () => {
-  for (let box of boxes) {
-    box.disabled = false;
-    box.innerText = "";
-  }
+  return false;
 };
 
 const showWinner = (winner) => {
-  msg.innerText = `Congratulations, Winner is ${winner}`;
+  msg.innerText = `🎉 Winner is ${winner}`;
   msgContainer.classList.remove("hide");
-  disableBoxes();
+
+  if (winner === "O") {
+    oCount++;
+    oScore.innerText = oCount;
+  } else {
+    xCount++;
+    xScore.innerText = xCount;
+  }
+
+  boxes.forEach(box => box.disabled = true);
 };
 
-const checkWinner = () => {
-  for (let pattern of winPatterns) {
-    let pos1Val = boxes[pattern[0]].innerText;
-    let pos2Val = boxes[pattern[1]].innerText;
-    let pos3Val = boxes[pattern[2]].innerText;
+const gameDraw = () => {
+  msg.innerText = "😐 Game Draw!";
+  msgContainer.classList.remove("hide");
 
-    if (pos1Val != "" && pos2Val != "" && pos3Val != "") {
-      if (pos1Val === pos2Val && pos2Val === pos3Val) {
-        showWinner(pos1Val);
-        return true;
-      }
-    }
-  }
+  drawCount++;
+  drawScore.innerText = drawCount;
+
+  boxes.forEach(box => box.disabled = true);
 };
 
 newGameBtn.addEventListener("click", resetGame);
